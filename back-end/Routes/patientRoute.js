@@ -6,7 +6,7 @@ const {auth}=require("../MiddleWare/auth.middleware")
  patientRouter.get("/",auth, async(req,res)=>{
        
       try{
-        const patient=await PatientModel.find({"userId":req.body.userId})
+        const patient=await PatientModel.find({"patientId":req.body.patientId})
         res.status(200).send(patient) 
       }catch(err){
         res.status(400).send(err)
@@ -14,6 +14,7 @@ const {auth}=require("../MiddleWare/auth.middleware")
  })
 
 patientRouter.post("/add",auth, async(req,res)=>{
+  console.log(req.body)
          try{
            const patient=new PatientModel(req.body)
            await patient.save()
@@ -22,6 +23,28 @@ patientRouter.post("/add",auth, async(req,res)=>{
           res.status(400).send(err)
          }
 })
+patientRouter.get("/last-month", auth, async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const lastMonthStartDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() - 1,
+      1
+    );
+    const lastMonthEndDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      0
+    );
+    const patients = await PatientModel.find({
+      "patientId": req.body.patientId,
+      "admissionDate": { $gte: lastMonthStartDate, $lte: lastMonthEndDate }
+    });
+    res.status(200).send(patients);
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
 patientRouter.patch("/update/:id",auth,async(req,res)=>{
       const {id}=req.params;
       const payload=req.body

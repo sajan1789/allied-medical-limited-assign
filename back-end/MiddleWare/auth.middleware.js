@@ -1,12 +1,13 @@
 const jwt=require("jsonwebtoken")
 
 const auth=(req,res,next)=>{
-    const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWU4YzM5YjAwYTEzMTViZWU2ZWJkZjkiLCJpYXQiOjE3MDk3OTkzOTJ9.wJdAh0uxgqFlcywATcAWa6yf7XPJpvx43TiVRYgvXso";
+  const token = req.headers.authorization;
     console.log(req.body)
     if(token){
      const decoded=jwt.verify(token,"shhhhh")    
       if(decoded){
-         req.body.userId=decoded.userId
+        console.log(decoded.patientId)
+         req.body.patientId=decoded.patientId
          next()
          
       }
